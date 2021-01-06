@@ -1,14 +1,27 @@
 package pojos;
 
+
+
+import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class TheQuiz {
     private static Integer IDs = 0;
     private Integer id;
+    @NotBlank(message = "Field 'title' cannot be blank!")
     private String title;
+    @NotBlank(message = "Field 'test' cannot be blank!")
     private String text;
+    @NotNull
+    @Size(min = 2, message = "Field 'options' should contain at least 2 items!")
     private List<String> options;
-    private Integer answer;
+    private List<Integer> answer = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -44,11 +57,11 @@ public class TheQuiz {
 
     //custom getter to not be used bu Spring but only manually
     // , e.g. in @PostMapping("/api/quizzes/{id}/solve")
-    public int theAnswer() {
+    public List<Integer> theAnswer() {
         return answer;
     }
 
-    public void setAnswer(int answer) {
+    public void setAnswer(List<Integer> answer) {
         this.answer = answer;
     }
 
@@ -80,7 +93,7 @@ public class TheQuiz {
         this.id = id;
     }
 
-    public TheQuiz(String title, String text, List<String> options, Integer answer) {
+    public TheQuiz(String title, String text, List<String> options, List<Integer> answer) {
         this.title = title;
         this.text = text;
         this.options = options;
