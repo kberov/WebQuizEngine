@@ -1,66 +1,69 @@
 package pojos;
 
-
-
-import org.springframework.validation.annotation.Validated;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
+@Entity
+public class TheQuiz  implements Serializable {
 
-public class TheQuiz {
-    private static Integer IDs = 0;
-    private Integer id;
+    @Id
+    @GeneratedValue
+    @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private int id;
+
     @NotBlank(message = "Field 'title' cannot be blank!")
     private String title;
+
     @NotBlank(message = "Field 'test' cannot be blank!")
     private String text;
+
     @NotNull
     @Size(min = 2, message = "Field 'options' should contain at least 2 items!")
+    // @ElementCollection() tells JPA to automatically create a table with options etc.
+    @ElementCollection()
     private List<String> options;
-    private List<Integer> answer = new ArrayList<>();
+
+    // Hide the answer from the produced JSON object but accept the value
+    // when creating a new quiz to save it in the database.
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    // @ElementCollection() tells JPA to automatically create a table with options etc.
+    @ElementCollection()
+    private List<Integer> answer;
 
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
-
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
-
     public String getText() {
         return text;
     }
-
     public void setText(String text) {
         this.text = text;
     }
-
     public List<String> getOptions() {
         return options;
     }
-
     public void setOptions(List<String> options) {
         this.options = options;
     }
 
-    //custom getter to not be used bu Spring but only manually
-    // , e.g. in @PostMapping("/api/quizzes/{id}/solve")
-    public List<Integer> theAnswer() {
+    public List<Integer> getAnswer() {
         return answer;
     }
-
     public void setAnswer(List<Integer> answer) {
         this.answer = answer;
     }
@@ -76,9 +79,7 @@ public class TheQuiz {
      * "path":"/api/quizes"
      * }
      **/
-    public TheQuiz() {
-        this.id = ++IDs;
-    }
+    public TheQuiz() {}
 
     public TheQuiz clone() {
         // The copy-constructor
@@ -92,13 +93,4 @@ public class TheQuiz {
         this.options = options;
         this.id = id;
     }
-
-    public TheQuiz(String title, String text, List<String> options, List<Integer> answer) {
-        this.title = title;
-        this.text = text;
-        this.options = options;
-        this.answer = answer;
-        this.id = ++IDs;
-    }
-
 }
