@@ -1,3 +1,4 @@
+
 # WebQuizEngine
 
 A project which I made during my course on learning Java at
@@ -6,9 +7,11 @@ description of the task for each step completeion together with the code
 changes I have made for the specific step. I did not save the state of the code
 for the first step so only the description of the step will be in the first
 commit.
-----
+
+<hr/>
 
 ## About
+
 In the Internet, you can often find sites where you need to answer some
 questions. It can be educational sites, sites with psychological tests, job
 search services, or just entertaining sites like web quests. The common thing
@@ -108,5 +111,29 @@ You can write any other strings in the feedback field, but the names of the
 fields and the true/false values must match this example.
 
 
+### 87 / 87 Prerequisites
+
+Introduction to OOP, External resources, Units of information, Frameworks,
+Immutability, Computer algorithms, Introducing the first algorithm, The big O
+notation, Data structures, Fixed-size array, Dynamic array, World Wide Web,
+HyperText Transfer Protocol, HTTP URL, HTTP messages, REST, JSON, Postman,
+Introduction to Java, Basic literals, Overview of the basic program, Printing
+data, Types and variables, Sizes and ranges, Type casting, Comments, Naming
+variables, Scanning the input, Arithmetic operations, Integer types and
+operations, Boolean and logical operations, Relational operators, Increment and
+decrement, Characters, Conditional statement, Ternary operator, The for-loop,
+The while and do-while loops, Branching statements, Switch statement, Calling a
+method, Declaring a method, The main method, Overloading, Functional
+decomposition, Primitive and reference types, Array, Iterating over arrays,
+String, Final variables, IDE, IntelliJ IDEA, Introduction to Spring Boot,
+Write, compile, and run, JVM, JRE, and JDK, Errors in programs, Defining
+classes, Package, Constructor, Objects, Instance methods, Access modifiers,
+Getters and setters, Static members, Annotations, Multiple constructors,
+Inheritance, The keyword super, Hiding and overriding, Build tools, What is an
+exception, NPE, Boxing and unboxing, Generic programming, What are collections,
+ArrayList, Introduction to operating systems, Command line overview, Parameters
+and options, Java Archive, Gradle basics, Basic project with Gradle, Building
+apps using Gradle, Dependency management, Getting started with Spring Boot,
+Basic project structure, Rest controller
 
 
