@@ -1,16 +1,19 @@
 package control;
 
-import engine.WebQuizRepository;
+import engine.QuizRepository;
+import engine.UserRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pojos.AnswerResponse;
 import pojos.TheAnswer;
 import pojos.TheQuiz;
+import pojos.TheUser;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -35,7 +38,10 @@ public class Quiz {
     final static Logger logger = LoggerFactory.getLogger(Quiz.class);
 
     @Autowired
-    WebQuizRepository quizRepo;
+    QuizRepository quizRepo;
+    @Autowired
+    UserRepo userRepo;
+
     // Solve a quiz - none or more answers to a question.
     @PostMapping(value = "/api/quizzes/{id}/solve",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -61,31 +67,75 @@ public class Quiz {
         return new AnswerResponse(true, "Congratulations, you're right!");
     }
 
-    // Create a new quiz
+    // Create a new quiz!
+    // mojo get -u 'd@a.com:valid123' -H 'Content-Type: application/json'  -M POST http://localhost:8889/api/quizzes <quiz1.json
     @PostMapping("/api/quizzes")
     public TheQuiz addNewQuiz(@RequestBody @Valid TheQuiz newQuiz) {
+        TheUser theUser = getCurrentUser();
+        newQuiz.setUser(theUser);
         quizRepo.save(newQuiz);
-        logger.info("param id:" + newQuiz.getId() + "the answer" + newQuiz.getAnswer());
+        logger.info(
+                String.format("A new quiz, named '%s', with id '%d' for user '%s', with id '%d' was saved!", newQuiz.getTitle(), newQuiz.getId(), newQuiz.getUser().getEmail(), newQuiz.getUser().getId())
+        );
         return newQuiz.clone();
     }
 
     @GetMapping("/api/quizzes/{id}")
     public TheQuiz theQuizByID(@PathVariable int id) throws ResponseStatusException {
         logger.info("param id:" + id);
+
         if (id > 0 && id <= quizRepo.count()) {
-            return quizRepo.findById(id).orElseThrow(()->{new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "entity not found"
-            ); return null;
+            return quizRepo.findById(id).orElseThrow(() -> {
+                return new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "entity " + id + " not found"
+                );
             });
         }
-        logger.info("key not found:" + id);
+        logger.info("TheQuizId was not found:" + id);
         throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "entity not found"
+                HttpStatus.NOT_FOUND, "entity " + id + " not found"
         );
+
+    }
+
+    @DeleteMapping("/api/quizzes/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTheQuizByID(@PathVariable int id) throws ResponseStatusException {
+        logger.info("param TheQuiz id:" + id);
+        TheQuiz theQuiz;
+        if (id > 0 && id <= quizRepo.count()) {
+            theQuiz = quizRepo.findById(id).orElse(null);
+            if (theQuiz == null) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "entity " + id + " not found"
+                );
+            }
+        } else {
+            logger.info("TheQuizId was not found:" + id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "entity " + id + " not found"
+            );
+        }
+
+        TheUser theUser = getCurrentUser();
+        TheUser quizUser = theQuiz.getUser();
+        if (quizUser.getId() != theUser.getId()) {
+            logger.info("TheQuiz " + " with id:" + id + "does not belong to the user " + theUser.getEmail());
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "TheQuiz does not belong to the current user!"
+            );
+        }
+        quizRepo.delete(theQuiz);
     }
 
     @GetMapping("/api/quizzes")
     public Iterable<TheQuiz> allQuizzes() {
         return quizRepo.findAll();
+    }
+
+    private TheUser getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        logger.info("Getting user by email: " + email);
+        return userRepo.findByEmail(email);
     }
 }

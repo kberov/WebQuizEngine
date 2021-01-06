@@ -1,6 +1,7 @@
 package pojos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -9,13 +10,19 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-public class TheQuiz  implements Serializable {
+public class TheQuiz implements Serializable {
 
     @Id
     @GeneratedValue
     @Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private TheUser user;
+
 
     @NotBlank(message = "Field 'title' cannot be blank!")
     private String title;
@@ -36,54 +43,18 @@ public class TheQuiz  implements Serializable {
     @ElementCollection()
     private List<Integer> answer;
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getText() {
-        return text;
-    }
-    public void setText(String text) {
-        this.text = text;
-    }
-    public List<String> getOptions() {
-        return options;
-    }
-    public void setOptions(List<String> options) {
-        this.options = options;
-    }
-
-    public List<Integer> getAnswer() {
-        return answer;
-    }
-    public void setAnswer(List<Integer> answer) {
-        this.answer = answer;
-    }
-
     /**
-     * Default constructor which is invoked by  @PostMapping("/api/quizes")
+     * Default constructor which is invoked by  @PostMapping("/api/quizzes")
      * To avoid the following:
      * {
      * "timestamp":"2020-12-08T13:33:29.007+0000",
      * "status":500,
      * "error":"Internal Server Error",
      * "message":"No primary or default constructor found for class pojos.TheQuiz",
-     * "path":"/api/quizes"
+     * "path":"/api/quizzes"
      * }
      **/
-    public TheQuiz() {}
-
-    public TheQuiz clone() {
-        // The copy-constructor
-        return new TheQuiz(this.getId(), this.getTitle(), this.getText(), this.getOptions());
+    public TheQuiz() {
     }
 
     //copy constructor to be returned to the client
@@ -92,5 +63,59 @@ public class TheQuiz  implements Serializable {
         this.text = text;
         this.options = options;
         this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public TheUser getUser() {
+        return user;
+    }
+
+    public void setUser(TheUser user) {
+        this.user = user;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<String> options) {
+        this.options = options;
+    }
+
+    public List<Integer> getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(List<Integer> answer) {
+        this.answer = answer;
+    }
+
+    public TheQuiz clone() {
+        // The copy-constructor
+        return new TheQuiz(this.getId(), this.getTitle(), this.getText(), this.getOptions());
     }
 }
